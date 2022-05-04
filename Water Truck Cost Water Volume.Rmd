@@ -1,0 +1,202 @@
+---
+title: "Water Trucking Cost and Water Quantity"
+author: "Umar Daraz"
+date: '2022-05-04'
+output: word_document
+---
+
+```{echo=FALSE}
+## Data loading and preparation for this document
+{
+  library(odbc)
+  
+    ## Loading Admin1
+    {
+      conAdmin1 <- DBI::dbConnect(odbc::odbc(),
+                          Driver   = "SQL Server",
+                          Server   = "localhost",
+                          Database = "washwosassessments",
+                          Trusted_Connection = "True")
+      rs_queryAdmin1 <- dbSendQuery(conAdmin1,"SELECT * FROM tbl_admin1")
+      rs_Admin1 <- dbFetch(rs_queryAdmin1)
+      rm(conAdmin1,rs_queryAdmin1)
+    }
+    ## Loading Admin2
+    {
+      conAdmin2 <- DBI::dbConnect(odbc::odbc(),
+                          Driver   = "SQL Server",
+                          Server   = "localhost",
+                          Database = "washwosassessments",
+                          Trusted_Connection = "True")
+      rs_queryAdmin2 <- dbSendQuery(conAdmin2,"SELECT * FROM tbl_admin2")
+      rs_Admin2 <- dbFetch(rs_queryAdmin2)
+      rm(conAdmin1,rs_queryAdmin2) 
+    }
+    ## Loading Admin3
+    {
+      conAdmin3 <- DBI::dbConnect(odbc::odbc(),
+                          Driver   = "SQL Server",
+                          Server   = "localhost",
+                          Database = "washwosassessments",
+                          Trusted_Connection = "True")
+      rs_queryAdmin3 <- dbSendQuery(conAdmin3,"SELECT * FROM tbl_admin3")
+      rs_Admin3 <- dbFetch(rs_queryAdmin3)
+      rm(conAdmin1,rs_queryAdmin3) 
+    }
+    ## Loading Admin3
+    {
+      conAdmin4 <- DBI::dbConnect(odbc::odbc(),
+                            Driver   = "SQL Server",
+                            Server   = "localhost",
+                            Database = "washwosassessments",
+                            Trusted_Connection = "True")
+      rs_queryAdmin4 <- dbSendQuery(conAdmin4,"SELECT * FROM tbl_admin4")
+      rs_Admin4 <- dbFetch(rs_queryAdmin4)
+      rm(conAdmin4,rs_queryAdmin4)
+      }
+  
+
+  
+  
+  
+  
+  
+  con <- DBI::dbConnect(odbc::odbc(),
+                        Driver   = "SQL Server",
+                        Server   = "localhost",
+                        Database = "washwosassessments",
+                        Trusted_Connection = "True")
+  rs_query <- dbSendQuery(con,"SELECT
+                               [Gov_Name_Admin1]
+                              ,[Gov_PCode_Admin1]
+                              ,[Dist_Name_Admin2]
+                              ,[Dist_PCode_Admin2]
+                              ,[SDist_Name_Admin3]
+                              ,[SDist_PCode_Admin3]
+                              ,[Location_Name]
+                              ,[Location_PCode]
+                              ,[Location_Type]
+                              ,[AOI]
+                              ,[WEIGHTS]
+                              ,[HH_Type]
+                              ,[W_Q1_PotableWaterMainSource]
+                              ,[W_Q2_SecondaryWaterSourceYN]
+                              ,[W_Q2_SecondaryWaterSourceName]
+                              ,[W_Q2_NetworkYN]
+                              ,[W_Q2_WaterTruckingYN]
+                              ,[W_Q2_ClosedWellYN]
+                              ,[W_Q2_OpenWellYN]
+                              ,[W_Q2_SpringsYN]
+                              ,[W_Q2_RiverLakeYN]
+                              ,[W_Q2_BottleYN]
+                              ,[W_Q2_OtherYN]
+                              ,[W_Q2_OtherYNSpecify]
+                              ,[W_Q3_PercentNetwork]
+                              ,[W_Q3_PercentWaterTrucking]
+                              ,[W_Q3_PercentClosedWell]
+                              ,[W_Q3_PercentClosedWell_Network]
+                              ,[W_Q3_PercentClosedWell_HH]
+                              ,[W_Q3_PercentOpenWell]
+                              ,[W_Q3_PercentSprings]
+                              ,[W_Q3_PercentRiverLake]
+                              ,[W_Q3_PercentBottle]
+                              ,[W_Q3_PercentOther]
+                              ,[W_Q9_PercentIncomeOnWaterPurchase]
+                              ,[W_Q9_SYPSpendOnWaterPurchase]
+                              ,[W_Q9_WillingToPayForWater]
+                              ,[W_Q9_MaxSYPWillingToPayForWater]
+                          FROM tbl_2_Water")
+  
+  rs_WTSyria <- dbFetch(rs_query)
+  
+  rm(con,rs_query)
+}
+
+{
+  library(sqldf)
+  temp2022WinterRound <- read.csv("C:\\Users\\udaraz\\OneDrive - UNICEF\\WASH_WoS_Sector_HNOs\\HNO-2023\\Round-1\\DataReceived_28022022\\WASH_HH_Survey_Dataset_Feb_2022_Main.csv")
+  
+  tempAdmin1Name <- rs_Admin4[rs_Admin4$admin1Pcode == temp2022WinterRound$admin1,c("admin1Name_en")]
+  
+  temp2022WinterRound_Clean$Gov_Name_Admin1 <- 
+    
+    
+    rs_Admin4[rs_Admin4$admin1Pcode == temp2022WinterRound$admin1,c("admin1Name_en")]
+  
+  Reduce()
+  temp2022WinterRound_Clean$Gov_PCode_Admin1 <- temp2022WinterRound$admin1
+  temp2022WinterRound_Clean$Dist_Name_Admin2 <- rs_WTSyria[rs_WTSyria$Gov_PCode_Admin2 == temp2022WinterRound$admin2,c("Dist_Name_Admin2")]
+  temp2022WinterRound_Clean$Dist_PCode_Admin2  <- temp2022WinterRound$admin2
+  temp2022WinterRound_Clean$SDist_Name_Admin3 <- rs_WTSyria[rs_WTSyria$Gov_PCode_Admin3 == temp2022WinterRound$admin3,c("SDist_Name_Admin3")]
+  temp2022WinterRound_Clean$SDist_PCode_Admin3 <- temp2022WinterRound$admin3
+  temp2022WinterRound_Clean$Location_Name <- rs_WTSyria[rs_WTSyria$Location_PCode == temp2022WinterRound$admin4,c("Location_Name")]
+  temp2022WinterRound_Clean$Location_PCode <- temp2022WinterRound$admin4
+  temp2022WinterRound_Clean$Location_Type <- ifelse(temp2022WinterRound$locationType == 1,"Community",
+                                                    ifelse(temp2022WinterRound$locationType == 2,"Neighnorhood",
+                                                           ifelse(temp2022WinterRound$locationType == 3,"Camp", NA)))
+  temp2022WinterRound_Clean$AOI <- temp2022WinterRound$AoC
+  temp2022WinterRound_Clean$WEIGHTS <- temp2022WinterRound$temp2022WinterRound
+  temp2022WinterRound_Clean$HH_Type <- ifelse(temp2022WinterRound$HH_Type == 1,"Host-population",
+                                              ifelse(temp2022WinterRound$HH_Type == 2,"IDPs",
+                                                     ifelse(temp2022WinterRound$HH_Type == 3,"Returnees", NA)))
+  temp2022WinterRound_Clean$W_Q1_PotableWaterMainSource <- temp2022WinterRound$W1
+  temp2022WinterRound_Clean$W_Q2_SecondaryWaterSourceYN <- temp2022WinterRound$W2_YesNo
+  temp2022WinterRound_Clean$W_Q2_SecondaryWaterSourceName <- temp2022WinterRound$W2
+  temp2022WinterRound_Clean$W_Q2_NetworkYN <- temp2022WinterRound$W2.Network
+  temp2022WinterRound_Clean$W_Q2_WaterTruckingYN <- temp2022WinterRound$W2.Water_trucking
+  temp2022WinterRound_Clean$W_Q2_ClosedWellYN <- temp2022WinterRound$W2.Closed_well_network #W2.Closed_well_indivisual
+  temp2022WinterRound_Clean$W_Q2_OpenWellYN <- temp2022WinterRound$W2.Open_well
+  temp2022WinterRound_Clean$W_Q2_SpringsYN <- temp2022WinterRound$W2.Springs
+  temp2022WinterRound_Clean$W_Q2_RiverLakeYN <- temp2022WinterRound$W2.River
+  temp2022WinterRound_Clean$W_Q2_BottleYN <- temp2022WinterRound$W2.Bottle
+  temp2022WinterRound_Clean$W_Q2_OtherYN <- temp2022WinterRound$W2.O
+  temp2022WinterRound_Clean$W_Q2_OtherYNSpecify <- temp2022WinterRound$W2_OtWer
+    
+  temp2022WinterRound_Clean$W_Q3_PercentNetwork <- temp2022WinterRound$W3_Network
+  temp2022WinterRound_Clean$W_Q3_PercentWaterTrucking <- temp2022WinterRound$W3_Water_trucking
+  temp2022WinterRound_Clean$W_Q3_PercentClosedWell <- temp2022WinterRound$W3_Closed_well_network
+  temp2022WinterRound_Clean$W_Q3_PercentClosedWell_Network <- temp2022WinterRound$W3_Closed_well_network
+  temp2022WinterRound_Clean$W_Q3_PercentClosedWell_HH <- temp2022WinterRound$W3_Closed_well_indivisual
+  temp2022WinterRound_Clean$W_Q3_PercentOpenWell <- temp2022WinterRound$W3_Open_well
+  temp2022WinterRound_Clean$W_Q3_PercentSprings <- temp2022WinterRound$W3_Spring
+  temp2022WinterRound_Clean$W_Q3_PercentRiverLake <- temp2022WinterRound$W3_River
+  temp2022WinterRound_Clean$W_Q3_PercentBottle <- temp2022WinterRound$W3_Bottle
+  temp2022WinterRound_Clean$W_Q3_PercentOther <- temp2022WinterRound$W3_Other_source
+  
+  temp2022WinterRound_Clean$W_Q9_PercentIncomeOnWaterPurchase <- temp2022WinterRound$W7
+  temp2022WinterRound_Clean$W_Q9_SYPSpendOnWaterPurchase <- temp2022WinterRound$W7_1
+  temp2022WinterRound_Clean$W_Q9_WillingToPayForWater <- temp2022WinterRound$W7_2
+  temp2022WinterRound_Clean$W_Q9_MaxSYPWillingToPayForWater <- temp2022WinterRound$W7_2_Amount
+    
+}
+
+
+```
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+```
+
+## Water Trucking Price and quantity of water:
+
+
+
+
+```{r cars}
+
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
